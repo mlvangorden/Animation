@@ -13,7 +13,7 @@ let nut_width : CGFloat = 200
 let nut_height : CGFloat = 225
 let acorn_width : CGFloat = 100
 let screenBounds = UIScreen.main.bounds
-var screen_width : CGFloat = (screenBounds.width)
+var screen_width : CGFloat = 375
 let screen_height : CGFloat = (screenBounds.height)
 let floor_height : CGFloat = 50
 var goal_up = true
@@ -57,7 +57,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var nut8_flag = false
     
     override func didMove(to view: SKView) {
-        screen_width = (screenBounds.width)
         
         self.physicsWorld.contactDelegate = self
 
@@ -153,6 +152,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
    
     //doesn't work!!! >:I
+    /*
     func didBegin(_ contact: SKPhysicsContact) {
         let first_body = contact.bodyA.node as! SKSpriteNode
         let second_body = contact.bodyB.node as! SKSpriteNode
@@ -164,6 +164,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             second_body.physicsBody?.applyImpulse(CGVector(dx: 50, dy: -25))
         }
     }
+ */
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
@@ -303,28 +304,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let current = self.childNode(withName: nutArray[nut-1])
         let Y_value : CGFloat = (nut_height / 2) + floor_height - (screen_width)
         if(nut == 1){
-            current!.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
+            nut1.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
         }
         if(nut == 2){
-            current!.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
+            nut2.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
         }
         if(nut == 3){
-            current!.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
+            nut3.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
         }
         if(nut == 4){
-            current!.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
+            nut4.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
         }
         if(nut == 5){
-            current!.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
-        }
-        if(nut == 6){
-            current!.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
-        }
-        if(nut == 7){
-            current!.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
-        }
-        if(nut == 8){
-            current!.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
+            nut5.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
         }
     }
     
