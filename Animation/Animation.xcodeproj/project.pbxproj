@@ -37,7 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		597F8D9123390CB3003EAD2A /* Animation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Animation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		597F8D9123390CB3003EAD2A /* NUT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NUT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		597F8D9423390CB3003EAD2A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		597F8D9623390CB3003EAD2A /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		597F8D9823390CB3003EAD2A /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
@@ -93,7 +93,7 @@
 		597F8D9223390CB3003EAD2A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				597F8D9123390CB3003EAD2A /* Animation.app */,
+				597F8D9123390CB3003EAD2A /* NUT.app */,
 				597F8DAB23390CB4003EAD2A /* AnimationTests.xctest */,
 				597F8DB623390CB4003EAD2A /* AnimationUITests.xctest */,
 			);
@@ -151,7 +151,7 @@
 			);
 			name = Animation;
 			productName = Animation;
-			productReference = 597F8D9123390CB3003EAD2A /* Animation.app */;
+			productReference = 597F8D9123390CB3003EAD2A /* NUT.app */;
 			productType = "com.apple.product-type.application";
 		};
 		597F8DAA23390CB4003EAD2A /* AnimationTests */ = {
@@ -450,7 +450,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = mlvangorden.Animation;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = NUT;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -468,7 +468,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = mlvangorden.Animation;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = NUT;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
