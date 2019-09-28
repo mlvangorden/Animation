@@ -16,7 +16,11 @@ let screenBounds = UIScreen.main.bounds
 var screen_width : CGFloat = 375
 let screen_height : CGFloat = (screenBounds.height)
 let floor_height : CGFloat = 50
-var goal_up = true
+
+let acornCategory : UInt32 = 0x1 << 1
+let nutCategory : UInt32 = 0x1 << 2
+let floorCategory : UInt32 = 0x1 << 3
+let goalCategory : UInt32 = 0x1 << 4
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -25,12 +29,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var nut3 = SKSpriteNode()
     var nut4 = SKSpriteNode()
     var nut5 = SKSpriteNode()
-    /*var nut6 = SKSpriteNode()
-    var nut7 = SKSpriteNode()
-    var nut8 = SKSpriteNode()
- */
     
-    let nutArray = ["nut1", "nut2", "nut3", "nut4", "nut5", "nut6", "nut7", "nut8"]
+    var nutArray = [SKSpriteNode]()
+    var startArray = [CGPoint]()
+    var flagArray = [false, false, false, false, false]
     
     var floor = SKSpriteNode()
     var goal = SKSpriteNode()
@@ -41,20 +43,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var nut3_start = CGPoint()
     var nut4_start = CGPoint()
     var nut5_start = CGPoint()
-    /*
-    var nut6_start = CGPoint()
-    var nut7_start = CGPoint()
-    var nut8_start = CGPoint()
- */
-    
-    var nut1_flag = false
-    var nut2_flag = false
-    var nut3_flag = false
-    var nut4_flag = false
-    var nut5_flag = false
-    var nut6_flag = false
-    var nut7_flag = false
-    var nut8_flag = false
     
     override func didMove(to view: SKView) {
         
@@ -66,312 +54,160 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         nut3 = (self.childNode(withName: "nut3") as? SKSpriteNode)!
         nut4 = (self.childNode(withName: "nut4") as? SKSpriteNode)!
         nut5 = (self.childNode(withName: "nut5") as? SKSpriteNode)!
-        /*
-        nut6 = (self.childNode(withName: "nut6") as? SKSpriteNode)!
-        nut7 = (self.childNode(withName: "nut7") as? SKSpriteNode)!
-        nut8 = (self.childNode(withName: "nut8") as? SKSpriteNode)!
- */
+        
+        nutArray.append(nut1)
+        nutArray.append(nut2)
+        nutArray.append(nut3)
+        nutArray.append(nut4)
+        nutArray.append(nut5)
         
         nut1_start = nut1.position
         nut2_start = nut2.position
         nut3_start = nut3.position
         nut4_start = nut4.position
         nut5_start = nut5.position
-        /*
-        nut6_start = nut6.position
-        nut7_start = nut7.position
-        nut8_start = nut8.position
- */
+        
+        startArray.append(nut1_start)
+        startArray.append(nut2_start)
+        startArray.append(nut3_start)
+        startArray.append(nut4_start)
+        startArray.append(nut5_start)
+        
+        
         
         goal = (self.childNode(withName: "goal") as? SKSpriteNode)!
         acorn = (self.childNode(withName: "acorn") as? SKSpriteNode)!
         
-        acorn.physicsBody?.applyImpulse(CGVector(dx: 150, dy: 0))
+        acorn.physicsBody?.applyImpulse(CGVector(dx: 75, dy: 0))
         
         let border = SKPhysicsBody(edgeLoopFrom: self.frame)
         border.friction = 0
         border.restitution = 1
         
         self.physicsBody = border
-        //self.physicsWorld.gravity = CGVector(dx: 1, dy: -10)
         
-        
-        acorn.physicsBody?.categoryBitMask = 0x1 << 1
-        acorn.physicsBody?.collisionBitMask = 0x1 << 2 | 0x1 << 3
-        acorn.physicsBody?.contactTestBitMask = 0x1 << 2 | 0x1 << 3
+        acorn.physicsBody?.categoryBitMask = acornCategory
+        acorn.physicsBody?.collisionBitMask = nutCategory | floorCategory
+        acorn.physicsBody?.contactTestBitMask = nutCategory | floorCategory
         acorn.name = "acorn"
         
-        nut1.physicsBody?.categoryBitMask = 0x1 << 2
-        nut1.physicsBody?.collisionBitMask = 0x1 << 1
-        nut1.physicsBody?.contactTestBitMask = 0x1 << 1
-        nut1.name = "nut"
-        nut2.physicsBody?.categoryBitMask = 0x1 << 2
-        nut2.physicsBody?.collisionBitMask = 0x1 << 1
-        nut2.physicsBody?.contactTestBitMask = 0x1 << 1
-        nut2.name = "nut"
-        nut3.physicsBody?.categoryBitMask = 0x1 << 2
-        nut3.physicsBody?.collisionBitMask = 0x1 << 1
-        nut3.physicsBody?.contactTestBitMask = 0x1 << 1
-        nut3.name = "nut"
-        nut4.physicsBody?.categoryBitMask = 0x1 << 2
-        nut4.physicsBody?.collisionBitMask = 0x1 << 1
-        nut4.physicsBody?.contactTestBitMask = 0x1 << 1
-        nut4.name = "nut"
-        nut5.physicsBody?.categoryBitMask = 0x1 << 2
-        nut5.physicsBody?.collisionBitMask = 0x1 << 1
-        nut5.physicsBody?.contactTestBitMask = 0x1 << 1
-        nut5.name = "nut"
+        nut1.physicsBody?.categoryBitMask = nutCategory
+        nut1.physicsBody?.collisionBitMask = acornCategory
+        nut1.physicsBody?.contactTestBitMask = acornCategory
+        nut1.name = "nut1"
+        nut2.physicsBody?.categoryBitMask = nutCategory
+        nut2.physicsBody?.collisionBitMask = acornCategory
+        nut2.physicsBody?.contactTestBitMask = acornCategory
+        nut2.name = "nut2"
+        nut3.physicsBody?.categoryBitMask = nutCategory
+        nut3.physicsBody?.collisionBitMask = acornCategory
+        nut3.physicsBody?.contactTestBitMask = acornCategory
+        nut3.name = "nut3"
+        nut4.physicsBody?.categoryBitMask = nutCategory
+        nut4.physicsBody?.collisionBitMask = acornCategory
+        nut4.physicsBody?.contactTestBitMask = acornCategory
+        nut4.name = "nut4"
+        nut5.physicsBody?.categoryBitMask = nutCategory
+        nut5.physicsBody?.collisionBitMask = acornCategory
+        nut5.physicsBody?.contactTestBitMask = acornCategory
+        nut5.name = "nut5"
         
-        floor.physicsBody?.categoryBitMask = 0x1 << 3
-        floor.physicsBody?.collisionBitMask = 0x1 << 1
-        floor.physicsBody?.contactTestBitMask = 0x1 << 1
+        floor.physicsBody?.categoryBitMask = floorCategory
+        floor.physicsBody?.collisionBitMask = acornCategory
+        floor.physicsBody?.contactTestBitMask = acornCategory
         floor.name = "floor"
         
-        
-        
-        
-        /*
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
-        
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
-        
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
-        */
     }
-   
-    //doesn't work!!! >:I
-    /*
+    
     func didBegin(_ contact: SKPhysicsContact) {
-        let first_body = contact.bodyA.node as! SKSpriteNode
-        let second_body = contact.bodyB.node as! SKSpriteNode
+        //var acor : SKPhysicsBody
+        //var nut : SKPhysicsBody
         
-        if( (first_body.name == "acorn" && second_body.name == "nut") ) {
-            first_body.physicsBody?.applyImpulse(CGVector(dx: 50, dy: -25))
+        if( contact.bodyA.categoryBitMask == 0x1 << 1 && contact.bodyB.categoryBitMask == 0x1 << 2 ) {
+            //acor = contact.bodyA
+            //nut = contact.bodyB
+            acornNutCollide()
         }
-        else if( (first_body.name == "nut" && second_body.name == "acorn") ) {
-            second_body.physicsBody?.applyImpulse(CGVector(dx: 50, dy: -25))
+        else if( contact.bodyB.categoryBitMask == 0x1 << 1 && contact.bodyA.categoryBitMask == 0x1 << 2 ) {
+            //acor = contact.bodyB
+            //nut = contact.bodyA
+            acornNutCollide()
         }
     }
- */
+    
+    func acornNutCollide() {
+        acorn.physicsBody?.applyImpulse(CGVector(dx: 5, dy: 5))
+    }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let location = touch.location(in: self)
-            
             if ( ( nut1.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut1.position.x + (nut_width/2) ) ) {
-                nut1_flag = true
+                flagArray[0] = true
             }
             if ( ( nut2.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut2.position.x + (nut_width/2) ) ) {
-                nut2_flag = true
+                flagArray[1] = true
             }
             if ( ( nut3.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut3.position.x + (nut_width/2) ) ) {
-                nut3_flag = true
+                flagArray[2] = true
             }
             if ( ( nut4.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut4.position.x + (nut_width/2) ) ) {
-                nut4_flag = true
+                flagArray[3] = true
             }
             if ( ( nut5.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut5.position.x + (nut_width/2) ) ) {
-                nut5_flag = true
+                flagArray[4] = true
             }
-            /*
-            if ( ( nut6.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut6.position.x + (nut_width/2) ) ) {
-                nut6_flag = true
-            }
-            if ( ( nut7.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut7.position.x + (nut_width/2) ) ) {
-                nut7_flag = true
-            }
-            if ( ( nut8.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut8.position.x + (nut_width/2) ) ) {
-                nut8_flag = true
-            }
-            */
- 
         }
     }
-
+    
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let location = touch.location(in: self)
             if ( ( nut1.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut1.position.x + (nut_width/2) ) ) {
-                nut1_flag = true
-                nut2_flag = false
-                nut3_flag = false
-                nut4_flag = false
-                nut5_flag = false
-                nut6_flag = false
-                nut7_flag = false
-                nut8_flag = false
+                flagArray[0] = true
             }
             if ( ( nut2.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut2.position.x + (nut_width/2) ) ) {
-                nut1_flag = false
-                nut2_flag = true
-                nut3_flag = false
-                nut4_flag = false
-                nut5_flag = false
-                nut6_flag = false
-                nut7_flag = false
-                nut8_flag = false
+                flagArray[1] = true
             }
             if ( ( nut3.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut3.position.x + (nut_width/2) ) ) {
-                moveNut(nut: 3)
-                nut1_flag = false
-                nut2_flag = false
-                nut3_flag = true
-                nut4_flag = false
-                nut5_flag = false
-                nut6_flag = false
-                nut7_flag = false
-                nut8_flag = false
+                flagArray[2] = true
             }
             if ( ( nut4.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut4.position.x + (nut_width/2) ) ) {
-                nut1_flag = false
-                nut2_flag = false
-                nut3_flag = false
-                nut4_flag = true
-                nut5_flag = false
-                nut6_flag = false
-                nut7_flag = false
-                nut8_flag = false
+                flagArray[3] = true
             }
             if ( ( nut5.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut5.position.x + (nut_width/2) ) ) {
-                nut1_flag = false
-                nut2_flag = false
-                nut3_flag = false
-                nut4_flag = false
-                nut5_flag = true
-                nut6_flag = false
-                nut7_flag = false
-                nut8_flag = false
+                flagArray[4] = true
             }
-            /*
-            if ( ( nut6.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut6.position.x + (nut_width/2) ) ) {
-                nut1_flag = false
-                nut2_flag = false
-                nut3_flag = false
-                nut4_flag = false
-                nut5_flag = false
-                nut6_flag = true
-                nut7_flag = false
-                nut8_flag = false
-            }
-            if ( ( nut7.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut7.position.x + (nut_width/2) ) ) {
-                nut1_flag = false
-                nut2_flag = false
-                nut3_flag = false
-                nut4_flag = false
-                nut5_flag = false
-                nut6_flag = false
-                nut7_flag = true
-                nut8_flag = false
-            }
-            if ( ( nut8.position.x - (nut_width/2) ) <= location.x && location.x <= ( nut8.position.x + (nut_width/2) ) ) {
-                nut1_flag = false
-                nut2_flag = false
-                nut3_flag = false
-                nut4_flag = false
-                nut5_flag = false
-                nut6_flag = false
-                nut7_flag = false
-                nut8_flag = true
-            }
-            */
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        nut1_flag = false
-        nut2_flag = false
-        nut3_flag = false
-        nut4_flag = false
-        nut5_flag = false
-        nut6_flag = false
-        nut7_flag = false
-        nut8_flag = false
+        flagArray = [false, false, false, false, false]
     }
     
-    func moveNut(nut: Int){
-        let current = self.childNode(withName: nutArray[nut-1])
-        let Y_value : CGFloat = (nut_height / 2) + floor_height - (screen_width)
-        if(nut == 1){
-            nut1.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
-        }
-        if(nut == 2){
-            nut2.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
-        }
-        if(nut == 3){
-            nut3.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
-        }
-        if(nut == 4){
-            nut4.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
-        }
-        if(nut == 5){
-            nut5.run(SKAction.moveTo(y: (Y_value), duration: 0.05))
-        }
+    func setNutFlag(nut: Int) {
+        
     }
     
-    func returnNut(nut: Int){
-        //let current = self.childNode(withName: nutArray[nut-1])
-        var placement = CGPoint()
-        if(nut == 1){
-            placement = nut1_start
-            nut1.run(SKAction.move(to: placement, duration: 0.1))
-        }
-        if(nut == 2){
-            placement = nut2_start
-            nut2.run(SKAction.move(to: placement, duration: 0.1))
-        }
-        if(nut == 3){
-            placement = nut3_start
-            nut3.run(SKAction.move(to: placement, duration: 0.1))
-        }
-        if(nut == 4){
-            placement = nut4_start
-            nut4.run(SKAction.move(to: placement, duration: 0.1))
-        }
-        if(nut == 5){
-            placement = nut5_start
-            nut5.run(SKAction.move(to: placement, duration: 0.1))
-        }
-        /*
-        if(nut == 6){placement = nut6_start}
-        if(nut == 7){placement = nut7_start}
-        if(nut == 8){placement = nut8_start}
- */
+    func moveNut(nut: Int) {
+        nutArray[nut-1].run(SKAction.moveTo(y: (nut_height / 2) + floor_height - screen_width, duration: 0.05))
     }
     
-    
+    func returnNut(nut: Int) {
+        nutArray[nut-1].run(SKAction.move(to: startArray[nut-1], duration: 0.05))
+    }
     
     override func update(_ currentTime: TimeInterval){
-        goal.physicsBody?.velocity = CGVector(dx: 200, dy: 200)
-        if(nut1_flag){moveNut(nut: 1)}
+        if(flagArray[0]){moveNut(nut: 1)}
         else{returnNut(nut: 1)}
-        if(nut2_flag){moveNut(nut: 2)}
+        if(flagArray[1]){moveNut(nut: 2)}
         else{returnNut(nut: 2)}
-        if(nut3_flag){moveNut(nut: 3)}
+        if(flagArray[2]){moveNut(nut: 3)}
         else{returnNut(nut: 3)}
-        if(nut4_flag){moveNut(nut: 4)}
+        if(flagArray[3]){moveNut(nut: 4)}
         else{returnNut(nut: 4)}
-        if(nut5_flag){moveNut(nut: 5)}
+        if(flagArray[4]){moveNut(nut: 5)}
         else{returnNut(nut: 5)}
-        /*
-        if(nut6_flag){moveNut(nut: 6)}
-        else{returnNut(nut: 6)}
-        if(nut7_flag){moveNut(nut: 7)}
-        else{returnNut(nut: 7)}
-        if(nut8_flag){moveNut(nut: 8)}
-        else{returnNut(nut: 8)}
- */
     }
     
     /*
