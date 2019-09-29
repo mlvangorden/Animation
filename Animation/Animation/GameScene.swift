@@ -11,16 +11,16 @@ import GameplayKit
 
 let nut_width : CGFloat = 200
 let nut_height : CGFloat = 225
-let acorn_width : CGFloat = 100
+let acorn_width : CGFloat = 140
 let screenBounds = UIScreen.main.bounds
 var screen_width : CGFloat = 375
 let screen_height : CGFloat = (screenBounds.height)
 let floor_height : CGFloat = 50
 
-let acornCategory : UInt32 = 0x1 << 1
-let nutCategory : UInt32 = 0x1 << 2
-let floorCategory : UInt32 = 0x1 << 3
-let goalCategory : UInt32 = 0x1 << 4
+let acornCategory : UInt32 = 0x7
+//let nutCategory : UInt32 = 0x1 << 2
+let floorCategory : UInt32 = 0x5
+let goalCategory : UInt32 = 0x6
 
 let nut_offset : CGFloat = 60
 
@@ -34,6 +34,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var nutArray = [SKSpriteNode]()
     var startArray = [CGPoint]()
     var flagArray = [false, false, false, false]
+    var categoryArray = [UInt32]()
     
     var floor = SKSpriteNode()
     var goal = SKSpriteNode()
@@ -80,24 +81,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.physicsBody = border
         
+        //categories
+        for i in 1...4 {
+            categoryArray.append(UInt32(i))
+        }
+        
         acorn.physicsBody?.categoryBitMask = acornCategory
-        acorn.physicsBody?.collisionBitMask = nutCategory | floorCategory
-        acorn.physicsBody?.contactTestBitMask = nutCategory | floorCategory
+        acorn.physicsBody?.collisionBitMask = categoryArray[0] | categoryArray[1] | categoryArray[2] | categoryArray[3] | floorCategory
+        acorn.physicsBody?.contactTestBitMask = categoryArray[0] | categoryArray[1] | categoryArray[2] | categoryArray[3] | floorCategory
         acorn.name = "acorn"
         
-        nut1.physicsBody?.categoryBitMask = nutCategory
+        nut1.physicsBody?.categoryBitMask = categoryArray[0]
         nut1.physicsBody?.collisionBitMask = acornCategory
         nut1.physicsBody?.contactTestBitMask = acornCategory
         nut1.name = "nut1"
-        nut2.physicsBody?.categoryBitMask = nutCategory
+        nut2.physicsBody?.categoryBitMask = categoryArray[1]
         nut2.physicsBody?.collisionBitMask = acornCategory
         nut2.physicsBody?.contactTestBitMask = acornCategory
         nut2.name = "nut2"
-        nut3.physicsBody?.categoryBitMask = nutCategory
+        nut3.physicsBody?.categoryBitMask = categoryArray[2]
         nut3.physicsBody?.collisionBitMask = acornCategory
         nut3.physicsBody?.contactTestBitMask = acornCategory
         nut3.name = "nut3"
-        nut4.physicsBody?.categoryBitMask = nutCategory
+        nut4.physicsBody?.categoryBitMask = categoryArray[3]
         nut4.physicsBody?.collisionBitMask = acornCategory
         nut4.physicsBody?.contactTestBitMask = acornCategory
         nut4.name = "nut4"
@@ -113,29 +119,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //var acor : SKPhysicsBody
         var nutX = SKPhysicsBody()
         
-        if( contact.bodyA.categoryBitMask == 0x1 << 1 && contact.bodyB.categoryBitMask == 0x1 << 2 ) {
+        if( contact.bodyA.categoryBitMask == acornCategory && contact.bodyB.categoryBitMask <= categoryArray[3] ) {
             //acor = contact.bodyA
             nutX = contact.bodyB
         }
-        else if( contact.bodyB.categoryBitMask == 0x1 << 1 && contact.bodyA.categoryBitMask == 0x1 << 2 ) {
+        else if( contact.bodyA.categoryBitMask <= categoryArray[3] && contact.bodyB.categoryBitMask == acornCategory ) {
             //acor = contact.bodyB
             nutX = contact.bodyA
         }
-        //this might not work...
-        if(nutX == nut1) {
+
+        if(nutX.categoryBitMask == categoryArray[0]) {
             acornNutCollide(nut: 1)
-        } else if(nutX == nut2) {
+        } else if(nutX.categoryBitMask == categoryArray[1]) {
             acornNutCollide(nut: 2)
-        } else if(nutX == nut3) {
+        } else if(nutX.categoryBitMask == categoryArray[2]) {
             acornNutCollide(nut: 3)
-        } else if(nutX == nut4) {
+        } else if(nutX.categoryBitMask == categoryArray[3]) {
             acornNutCollide(nut: 4)
         }
+ 
     }
     
     //needs fine tuning
     func acornNutCollide(nut: Int) {
-            acorn.physicsBody?.applyImpulse(CGVector(dx: 3+nut, dy: 8-nut))
+        acorn.physicsBody?.applyImpulse(CGVector(dx: 7-nut, dy: 2+nut))
+        print(String(nut))
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
