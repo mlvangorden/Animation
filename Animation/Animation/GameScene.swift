@@ -11,14 +11,13 @@ import GameplayKit
 
 let nut_width : CGFloat = 200
 let nut_height : CGFloat = 225
-let acorn_width : CGFloat = 140
-let screenBounds = UIScreen.main.bounds
-var screen_width : CGFloat = 375
-let screen_height : CGFloat = (screenBounds.height)
+let acorn_width : CGFloat = 150
+var screenBounds = CGRect()
+var screen_width = CGFloat()
+var screen_height = CGFloat()
 let floor_height : CGFloat = 50
 
 let acornCategory : UInt32 = 0x7
-//let nutCategory : UInt32 = 0x1 << 2
 let floorCategory : UInt32 = 0x5
 let goalCategory : UInt32 = 0x6
 
@@ -33,12 +32,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var nutArray = [SKSpriteNode]()
     var startArray = [CGPoint]()
-    var flagArray = [false, false, false, false]
     var categoryArray = [UInt32]()
     
     var floor = SKSpriteNode()
     var goal = SKSpriteNode()
     var acorn = SKSpriteNode()
+    var sky = SKSpriteNode()
     
     var nut1_start = CGPoint()
     var nut2_start = CGPoint()
@@ -46,6 +45,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var nut4_start = CGPoint()
     
     override func didMove(to view: SKView) {
+        screenBounds = UIScreen.main.bounds
+        
+        let temp_height = screenBounds.height
+        let temp_width = screenBounds.width
+        
+        screen_width = max(temp_height, temp_width)
+        screen_height = min(temp_height, temp_width)
         
         self.physicsWorld.contactDelegate = self
 
@@ -54,6 +60,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         nut2 = (self.childNode(withName: "nut2") as? SKSpriteNode)!
         nut3 = (self.childNode(withName: "nut3") as? SKSpriteNode)!
         nut4 = (self.childNode(withName: "nut4") as? SKSpriteNode)!
+        sky = (self.childNode(withName: "sky") as? SKSpriteNode)!
         
         nutArray.append(nut1)
         nutArray.append(nut2)
@@ -75,7 +82,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         acorn.physicsBody?.applyImpulse(CGVector(dx: 75, dy: 0))
         
-        let border = SKPhysicsBody(edgeLoopFrom: self.frame)
+        let border = SKPhysicsBody(edgeLoopFrom: sky.frame)
         border.friction = 0
         border.restitution = 1
         
@@ -140,58 +147,48 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
  
     }
     
+    func overNut(x: CGFloat, nut: Int) -> Bool {
+        return (x >= nutArray[nut-1].position.x - (nut_width/2) - nut_offset) && (x <= nutArray[nut-1].position.x + (nut_width/2) + nut_offset)
+    }
+    
     //needs fine tuning
     func acornNutCollide(nut: Int) {
-        acorn.physicsBody?.applyImpulse(CGVector(dx: 7-nut, dy: 2+nut))
-        print(String(nut))
+        acorn.physicsBody?.applyImpulse(CGVector(dx: 100, dy: 100))
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let location = touch.location(in: self)
-            if (location.x <= ( nut1.position.x + (nut_width/2) + nut_offset ) ) {
-                flagArray[0] = true
-            }
-            if ( ( nut2.position.x - (nut_width/2) - nut_offset ) <= location.x && location.x <= ( nut2.position.x + (nut_width/2) + nut_offset ) ) {
-                flagArray[1] = true
-            }
-            if ( ( nut3.position.x - (nut_width/2) - nut_offset ) <= location.x && location.x <= ( nut3.position.x + (nut_width/2) + nut_offset ) ) {
-                flagArray[2] = true
-            }
-            if ( ( nut4.position.x - (nut_width/2) - nut_offset ) <= location.x ) {
-                flagArray[3] = true
+
+            for i in 1...4 {
+                if(overNut(x: location.x, nut: i)) {
+                    moveNut(nut: i)
+                }
             }
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         for touch in touches {
+            
             let location = touch.location(in: self)
-            if (location.x <= ( nut1.position.x + (nut_width/2) + nut_offset ) ) {
-                flagArray[0] = true
-            } else {
-                flagArray[0] = false
-            }
-            if ( ( nut2.position.x - (nut_width/2) - nut_offset ) <= location.x && location.x <= ( nut2.position.x + (nut_width/2) + nut_offset ) ) {
-                flagArray[1] = true
-            } else {
-                flagArray[1] = false
-            }
-            if ( ( nut3.position.x - (nut_width/2) - nut_offset ) <= location.x && location.x <= ( nut3.position.x + (nut_width/2) + nut_offset ) ) {
-                flagArray[2] = true
-            } else {
-                flagArray[2] = false
-            }
-            if ( ( nut4.position.x - (nut_width/2) - nut_offset ) <= location.x ) {
-                flagArray[3] = true
-            } else {
-                flagArray[3] = false
+            let previous_location = touch.previousLocation(in: self)
+            
+            for i in 1...4 {
+                if (overNut(x: location.x, nut: i)) {
+                    moveNut(nut: i)
+                } else if (overNut(x: previous_location.x, nut: i)) {
+                    returnNut(nut: i)
+                }
             }
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        flagArray = [false, false, false, false]
+        for i in 1...4 {
+            returnNut(nut: i)
+        }
     }
     
     func setNutFlag(nut: Int) {
@@ -199,7 +196,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func moveNut(nut: Int) {
-        nutArray[nut-1].run(SKAction.moveTo(y: (nut_height / 2) + floor_height - screen_width, duration: 0.05))
+        nutArray[nut-1].run(SKAction.moveTo(y: (nut_height / 2) + floor_height - (screen_height), duration: 0.05))
     }
     
     func returnNut(nut: Int) {
@@ -207,14 +204,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func update(_ currentTime: TimeInterval){
-        if(flagArray[0]){moveNut(nut: 1)}
-        else{returnNut(nut: 1)}
-        if(flagArray[1]){moveNut(nut: 2)}
-        else{returnNut(nut: 2)}
-        if(flagArray[2]){moveNut(nut: 3)}
-        else{returnNut(nut: 3)}
-        if(flagArray[3]){moveNut(nut: 4)}
-        else{returnNut(nut: 4)}
+
     }
     
     /*
