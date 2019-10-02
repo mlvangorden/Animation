@@ -36,13 +36,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var floor = SKSpriteNode()
     var goal = SKSpriteNode()
-    var acorn = SKSpriteNode()
     var sky = SKSpriteNode()
     
     var nut1_start = CGPoint()
     var nut2_start = CGPoint()
     var nut3_start = CGPoint()
     var nut4_start = CGPoint()
+    
+    var acornTimer = Timer()
     
     override func didMove(to view: SKView) {
         screenBounds = UIScreen.main.bounds
@@ -78,9 +79,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         startArray.append(nut4_start)
         
         goal = (self.childNode(withName: "goal") as? SKSpriteNode)!
-        acorn = (self.childNode(withName: "acorn") as? SKSpriteNode)!
-        
-        acorn.physicsBody?.applyImpulse(CGVector(dx: 75, dy: 0))
         
         let border = SKPhysicsBody(edgeLoopFrom: sky.frame)
         border.friction = 0
@@ -92,11 +90,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for i in 1...4 {
             categoryArray.append(UInt32(i))
         }
-        
-        acorn.physicsBody?.categoryBitMask = acornCategory
-        acorn.physicsBody?.collisionBitMask = categoryArray[0] | categoryArray[1] | categoryArray[2] | categoryArray[3] | floorCategory
-        acorn.physicsBody?.contactTestBitMask = categoryArray[0] | categoryArray[1] | categoryArray[2] | categoryArray[3] | floorCategory
-        acorn.name = "acorn"
         
         nut1.physicsBody?.categoryBitMask = categoryArray[0]
         nut1.physicsBody?.collisionBitMask = acornCategory
@@ -120,31 +113,56 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floor.physicsBody?.contactTestBitMask = acornCategory
         floor.name = "floor"
         
+        acornTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GameScene.spawnAcorn), userInfo: nil, repeats: true)
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
-        //var acor : SKPhysicsBody
+        var acor = SKPhysicsBody()
         var nutX = SKPhysicsBody()
         
         if( contact.bodyA.categoryBitMask == acornCategory && contact.bodyB.categoryBitMask <= categoryArray[3] ) {
-            //acor = contact.bodyA
+            acor = contact.bodyA
             nutX = contact.bodyB
         }
         else if( contact.bodyA.categoryBitMask <= categoryArray[3] && contact.bodyB.categoryBitMask == acornCategory ) {
-            //acor = contact.bodyB
+            acor = contact.bodyB
             nutX = contact.bodyA
         }
 
         if(nutX.categoryBitMask == categoryArray[0]) {
-            acornNutCollide(nut: 1)
+            acornNutCollide(nut: 1, acorn: acor)
         } else if(nutX.categoryBitMask == categoryArray[1]) {
-            acornNutCollide(nut: 2)
+            acornNutCollide(nut: 2, acorn: acor)
         } else if(nutX.categoryBitMask == categoryArray[2]) {
-            acornNutCollide(nut: 3)
+            acornNutCollide(nut: 3, acorn: acor)
         } else if(nutX.categoryBitMask == categoryArray[3]) {
-            acornNutCollide(nut: 4)
+            acornNutCollide(nut: 4, acorn: acor)
         }
  
+    }
+    
+    @objc func spawnAcorn(){
+        let acorn = SKSpriteNode(imageNamed: "acorn")
+        acorn.physicsBody = SKPhysicsBody(texture: SKTexture(imageNamed: "acorn"), size: CGSize(width: 150, height: 150))
+        acorn.physicsBody?.isDynamic = true
+        acorn.physicsBody?.affectedByGravity = true
+        acorn.physicsBody?.allowsRotation = true
+        acorn.physicsBody?.restitution = 0.5
+        acorn.physicsBody?.mass = 0.5
+        
+        acorn.physicsBody?.categoryBitMask = acornCategory
+        acorn.physicsBody?.collisionBitMask = categoryArray[0] | categoryArray[1] | categoryArray[2] | categoryArray[3] | floorCategory | acornCategory
+        acorn.physicsBody?.contactTestBitMask = categoryArray[0] | categoryArray[1] | categoryArray[2] | categoryArray[3] | floorCategory | acornCategory
+        acorn.name = "acorn"
+        
+        let randomPosition = Int.random(in: 0..<300)
+        acorn.position = CGPoint(x: -742, y: randomPosition)
+        
+        self.addChild(acorn)
+        
+        let randomImpulse = Int.random(in: 50..<100)
+        
+        acorn.physicsBody?.applyImpulse( CGVector(dx: randomImpulse, dy: 300 - (randomPosition - 20)) )
     }
     
     func overNut(x: CGFloat, nut: Int) -> Bool {
@@ -152,8 +170,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     //needs fine tuning
-    func acornNutCollide(nut: Int) {
-        acorn.physicsBody?.applyImpulse(CGVector(dx: 100, dy: 100))
+    func acornNutCollide(nut: Int, acorn: SKPhysicsBody) {
+        print(nut)
+        acorn.applyImpulse(CGVector(dx: 33 - nut*3, dy: 18 + nut*3))
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -189,10 +208,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for i in 1...4 {
             returnNut(nut: i)
         }
-    }
-    
-    func setNutFlag(nut: Int) {
-        
     }
     
     func moveNut(nut: Int) {
