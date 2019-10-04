@@ -119,11 +119,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if( contact.bodyA.categoryBitMask == category.acorn && contact.bodyB.categoryBitMask == category.finish ) {
             acor = contact.bodyA
-            scoreAcorn(acorn: acor)
+            //scoreAcorn(acorn: acor)
         }
         else if( contact.bodyA.categoryBitMask == category.finish && contact.bodyB.categoryBitMask == category.acorn ) {
             acor = contact.bodyB
-            scoreAcorn(acorn: acor)
+            //scoreAcorn(acorn: acor)
         }
         
         if( contact.bodyA.categoryBitMask == category.acorn && contact.bodyB.categoryBitMask <= category.nuts[3] ) {
