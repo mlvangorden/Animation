@@ -42,12 +42,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var nut3_start = CGPoint()
     var nut4_start = CGPoint()
     
+    var acornArray = [SKSpriteNode]()
     var nutArray = [SKSpriteNode]()
     var startArray = [CGPoint]()
     
     var acornTimer = Timer()
     
     var score = 0
+    var number_of_acorns = 0
     
     override func didMove(to view: SKView) {
         screenBounds = UIScreen.main.bounds
@@ -119,11 +121,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if( contact.bodyA.categoryBitMask == category.acorn && contact.bodyB.categoryBitMask == category.finish ) {
             acor = contact.bodyA
-            //scoreAcorn(acorn: acor)
+            scoreAcorn(acorn: acor)
         }
         else if( contact.bodyA.categoryBitMask == category.finish && contact.bodyB.categoryBitMask == category.acorn ) {
             acor = contact.bodyB
-            //scoreAcorn(acorn: acor)
+            scoreAcorn(acorn: acor)
         }
         
         if( contact.bodyA.categoryBitMask == category.acorn && contact.bodyB.categoryBitMask <= category.nuts[3] ) {
@@ -164,7 +166,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let randomPosition = Int.random(in: 0..<300)
         acorn.position = CGPoint(x: -742, y: randomPosition)
         
+        //acornArray.append(acorn)
         self.addChild(acorn)
+        number_of_acorns += 1
         
         let randomImpulse = Int.random(in: 50..<100)
         
@@ -172,10 +176,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func scoreAcorn(acorn: SKPhysicsBody){
-        let point = (acorn.node as? SKSpriteNode)!
-        self.removeChildren(in: [point])
+        acorn.node?.removeFromParent()
         score += 1
-        print(score)
+        number_of_acorns -= 1
     }
     
     func overNut(x: CGFloat, nut: Int) -> Bool {
@@ -231,7 +234,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func update(_ currentTime: TimeInterval){
-
+        if(number_of_acorns >= 20){
+            //reset game
+        }
     }
     
     /*
