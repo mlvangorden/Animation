@@ -8,6 +8,7 @@
 
 import SpriteKit
 import GameplayKit
+import AVFoundation
 
 let nut_width : CGFloat = 200
 let nut_height : CGFloat = 225
@@ -27,6 +28,8 @@ struct category {
 let nut_offset : CGFloat = 60
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    
+    var backgroundMusic : SKAudioNode!
     
     var nut1 = SKSpriteNode()
     var nut2 = SKSpriteNode()
@@ -112,7 +115,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         finish.physicsBody?.contactTestBitMask = category.acorn
         finish.name = "finish"
         
-        acornTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GameScene.spawnAcorn), userInfo: nil, repeats: true)
+        acornTimer = Timer.scheduledTimer(timeInterval: 2.25, target: self, selector: #selector(GameScene.spawnAcorn), userInfo: nil, repeats: true)
+        
+        if let musicURL = Bundle.main.url(forResource: "banana_breeze", withExtension: "wav") {
+            backgroundMusic = SKAudioNode(url: musicURL)
+            addChild(backgroundMusic)
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -155,8 +163,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         acorn.physicsBody?.isDynamic = true
         acorn.physicsBody?.affectedByGravity = true
         acorn.physicsBody?.allowsRotation = true
-        acorn.physicsBody?.restitution = 0.5
+        acorn.physicsBody?.restitution = 0.7
         acorn.physicsBody?.mass = 0.5
+        acorn.physicsBody?.linearDamping = 0.15
         
         acorn.physicsBody?.categoryBitMask = category.acorn
         acorn.physicsBody?.collisionBitMask = category.nuts[0] | category.nuts[1] | category.nuts[2] | category.nuts[3] | category.floor | category.acorn | category.finish

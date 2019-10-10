@@ -17,6 +17,7 @@
 		597F8DA523390CB3003EAD2A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 597F8DA323390CB3003EAD2A /* LaunchScreen.storyboard */; };
 		597F8DB023390CB4003EAD2A /* AnimationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597F8DAF23390CB4003EAD2A /* AnimationTests.swift */; };
 		597F8DBB23390CB4003EAD2A /* AnimationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597F8DBA23390CB4003EAD2A /* AnimationUITests.swift */; };
+		5983A369234F9B88003EE9E4 /* banana_breeze.wav in Resources */ = {isa = PBXBuildFile; fileRef = 5983A368234F9B88003EE9E4 /* banana_breeze.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		597F8DB623390CB4003EAD2A /* AnimationUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AnimationUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		597F8DBA23390CB4003EAD2A /* AnimationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationUITests.swift; sourceTree = "<group>"; };
 		597F8DBC23390CB4003EAD2A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5983A368234F9B88003EE9E4 /* banana_breeze.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = banana_breeze.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				597F8DA123390CB3003EAD2A /* Assets.xcassets */,
 				597F8DA323390CB3003EAD2A /* LaunchScreen.storyboard */,
 				597F8DA623390CB3003EAD2A /* Info.plist */,
+				5983A367234F9B5E003EE9E4 /* music */,
 			);
 			path = Animation;
 			sourceTree = "<group>";
@@ -132,6 +135,14 @@
 				597F8DBC23390CB4003EAD2A /* Info.plist */,
 			);
 			path = AnimationUITests;
+			sourceTree = "<group>";
+		};
+		5983A367234F9B5E003EE9E4 /* music */ = {
+			isa = PBXGroup;
+			children = (
+				5983A368234F9B88003EE9E4 /* banana_breeze.wav */,
+			);
+			path = music;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -238,6 +249,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5983A369234F9B88003EE9E4 /* banana_breeze.wav in Resources */,
 				597F8DA023390CB3003EAD2A /* Main.storyboard in Resources */,
 				597F8D9723390CB3003EAD2A /* GameScene.sks in Resources */,
 				597F8DA223390CB3003EAD2A /* Assets.xcassets in Resources */,
