@@ -17,6 +17,8 @@ var screenBounds = CGRect()
 var screen_width = CGFloat()
 var screen_height = CGFloat()
 let floor_height : CGFloat = 50
+let score_height : CGFloat = 150
+let score_width : CGFloat = 400
 
 struct category {
     static let acorn : UInt32 = 0x7
@@ -25,11 +27,19 @@ struct category {
     static let nuts : [UInt32] = [0x1, 0x2, 0x3, 0x4]
 }
 
+struct game_mode {
+    static let title : Int = 0
+    static let game : Int = 1
+    static let over : Int = 2
+}
+
 let nut_offset : CGFloat = 60
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var backgroundMusic : SKAudioNode!
+    
+    var game_scene = game_mode.title
     
     var nut1 = SKSpriteNode()
     var nut2 = SKSpriteNode()
@@ -45,11 +55,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var nut3_start = CGPoint()
     var nut4_start = CGPoint()
     
-    var acornArray = [SKSpriteNode]()
     var nutArray = [SKSpriteNode]()
     var startArray = [CGPoint]()
     
     var acornTimer = Timer()
+    var scoreDisplay = SKLabelNode()
     
     var score = 0
     var number_of_acorns = 0
@@ -115,7 +125,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         finish.physicsBody?.contactTestBitMask = category.acorn
         finish.name = "finish"
         
-        acornTimer = Timer.scheduledTimer(timeInterval: 2.25, target: self, selector: #selector(GameScene.spawnAcorn), userInfo: nil, repeats: true)
+        startGame()
+        
+        
+        /*
+        scoreDisplay = UILabel(frame: CGRect(x: ((screen_width / 2) - (score_width / 2)), y: 20, width: score_width, height: score_height))
+        view.addSubview(scoreDisplay)
+        scoreDisplay.textColor = UIColor(red: 34/255, green: 13/255, blue: 0/255, alpha: 1)
+        let customFont = UIFont(name: "ARCO Typography", size: UIFont.labelFontSize)
+        //scoreDisplay.font = UIFontMetrics.default.scaledFont(for: customFont!)
+        scoreDisplay.font = customFont!
+        scoreDisplay.adjustsFontForContentSizeCategory = true
+        scoreDisplay.text = String(score)
+        self.view!.addSubview(scoreDisplay)
+         
+         
+        
+        for fontFamilyName in UIFont.familyNames{
+            for fontName in UIFont.fontNames(forFamilyName: fontFamilyName){
+                print("Family: \(fontFamilyName)     Font: \(fontName)")
+            }
+        }
+        */
+        
         
         if let musicURL = Bundle.main.url(forResource: "banana_breeze", withExtension: "wav") {
             backgroundMusic = SKAudioNode(url: musicURL)
@@ -157,6 +189,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
  
     }
     
+    func startTitle() {
+        game_scene = game_mode.title
+    }
+    
+    func startGame() {
+        game_scene = game_mode.game
+        acornTimer = Timer.scheduledTimer(timeInterval: 2.25, target: self, selector: #selector(GameScene.spawnAcorn), userInfo: nil, repeats: true)
+        
+        scoreDisplay.fontName = "ARCO"
+        scoreDisplay.horizontalAlignmentMode = .center
+        scoreDisplay.position = CGPoint(x: 0, y: 280)
+        scoreDisplay.fontColor = UIColor(red: 39/255, green: 15/255, blue: 0/255, alpha: 1)
+        scoreDisplay.fontSize = 80
+        scoreDisplay.text = String(score)
+        self.addChild(scoreDisplay)
+    }
+    
+    func gameOver() {
+        game_scene = game_mode.over
+    }
+    
     @objc func spawnAcorn(){
         let acorn = SKSpriteNode(imageNamed: "acorn")
         acorn.physicsBody = SKPhysicsBody(texture: SKTexture(imageNamed: "acorn"), size: CGSize(width: 150, height: 150))
@@ -175,7 +228,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let randomPosition = Int.random(in: 0..<300)
         acorn.position = CGPoint(x: -742, y: randomPosition)
         
-        //acornArray.append(acorn)
         self.addChild(acorn)
         number_of_acorns += 1
         
@@ -188,6 +240,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         acorn.node?.removeFromParent()
         score += 1
         number_of_acorns -= 1
+        scoreDisplay.text = String(score)
     }
     
     func overNut(x: CGFloat, nut: Int) -> Bool {
