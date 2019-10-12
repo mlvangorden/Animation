@@ -24,6 +24,7 @@ struct category {
     static let acorn : UInt32 = 0x7
     static let finish : UInt32 = 0x6
     static let floor : UInt32 = 0x5
+    static let bumper : UInt32 = 0x8
     static let nuts : [UInt32] = [0x1, 0x2, 0x3, 0x4]
 }
 
@@ -41,12 +42,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var game_scene = game_mode.title
     
+    //start_title
+    var logo = SKSpriteNode()
+    var play_button = SKSpriteNode()
+    var button_pressed = false
+    var button_pressable = false
+    
+    //game_over
+    var pile = SKSpriteNode()
+    var game_over_label = SKLabelNode()
+    var restart_ready = false
+    
+    //nuts
     var nut1 = SKSpriteNode()
     var nut2 = SKSpriteNode()
     var nut3 = SKSpriteNode()
     var nut4 = SKSpriteNode()
     
+    //environment
     var floor = SKSpriteNode()
+    var bumper = SKSpriteNode()
     var sky = SKSpriteNode()
     var finish = SKSpriteNode()
     
@@ -59,7 +74,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var startArray = [CGPoint]()
     
     var acornTimer = Timer()
-    var scoreDisplay = SKLabelNode()
+    var score_display = SKLabelNode()
     
     var score = 0
     var number_of_acorns = 0
@@ -82,6 +97,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         nut4 = (self.childNode(withName: "nut4") as? SKSpriteNode)!
         sky = (self.childNode(withName: "sky") as? SKSpriteNode)!
         finish = (self.childNode(withName: "wall_right") as? SKSpriteNode)!
+        bumper = (self.childNode(withName: "bumper") as? SKSpriteNode)!
         
         nutArray.append(nut1)
         nutArray.append(nut2)
@@ -115,6 +131,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         nut4.physicsBody?.contactTestBitMask = category.acorn
         nut4.name = "nut4"
         
+        bumper.physicsBody?.categoryBitMask = category.bumper
+        bumper.physicsBody?.collisionBitMask = category.acorn
+        bumper.physicsBody?.contactTestBitMask = category.acorn
+        bumper.name = "bumper"
+        
         floor.physicsBody?.categoryBitMask = category.floor
         floor.physicsBody?.collisionBitMask = category.acorn
         floor.physicsBody?.contactTestBitMask = category.acorn
@@ -125,29 +146,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         finish.physicsBody?.contactTestBitMask = category.acorn
         finish.name = "finish"
         
-        startGame()
-        
-        
-        /*
-        scoreDisplay = UILabel(frame: CGRect(x: ((screen_width / 2) - (score_width / 2)), y: 20, width: score_width, height: score_height))
-        view.addSubview(scoreDisplay)
-        scoreDisplay.textColor = UIColor(red: 34/255, green: 13/255, blue: 0/255, alpha: 1)
-        let customFont = UIFont(name: "ARCO Typography", size: UIFont.labelFontSize)
-        //scoreDisplay.font = UIFontMetrics.default.scaledFont(for: customFont!)
-        scoreDisplay.font = customFont!
-        scoreDisplay.adjustsFontForContentSizeCategory = true
-        scoreDisplay.text = String(score)
-        self.view!.addSubview(scoreDisplay)
-         
-         
-        
-        for fontFamilyName in UIFont.familyNames{
-            for fontName in UIFont.fontNames(forFamilyName: fontFamilyName){
-                print("Family: \(fontFamilyName)     Font: \(fontName)")
-            }
-        }
-        */
-        
+        startTitle()
         
         if let musicURL = Bundle.main.url(forResource: "banana_breeze", withExtension: "wav") {
             backgroundMusic = SKAudioNode(url: musicURL)
@@ -159,6 +158,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var acor = SKPhysicsBody()
         var nutX = SKPhysicsBody()
         
+        //acorn vs goal
         if( contact.bodyA.categoryBitMask == category.acorn && contact.bodyB.categoryBitMask == category.finish ) {
             acor = contact.bodyA
             scoreAcorn(acorn: acor)
@@ -168,6 +168,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             scoreAcorn(acorn: acor)
         }
         
+        //acorn vs nut
         if( contact.bodyA.categoryBitMask == category.acorn && contact.bodyB.categoryBitMask <= category.nuts[3] ) {
             acor = contact.bodyA
             nutX = contact.bodyB
@@ -175,6 +176,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if( contact.bodyA.categoryBitMask <= category.nuts[3] && contact.bodyB.categoryBitMask == category.acorn ) {
             acor = contact.bodyB
             nutX = contact.bodyA
+        }
+        //acorn vs bumper
+        if( contact.bodyA.categoryBitMask == category.acorn && contact.bodyB.categoryBitMask == category.bumper ) {
+            acor = contact.bodyA
+            acor.applyImpulse( CGVector(dx: 200, dy: 200) )
+        }
+        else if( contact.bodyA.categoryBitMask == category.bumper && contact.bodyB.categoryBitMask == category.acorn ) {
+            acor = contact.bodyB
+            acor.applyImpulse( CGVector(dx: 50, dy: 50) )
         }
 
         if(nutX.categoryBitMask == category.nuts[0]) {
@@ -190,24 +200,79 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startTitle() {
+        restart_ready = false
+        game_over_label.removeFromParent()
+        pile.removeFromParent()
+        score_display.removeFromParent()
+        score = 0
+        
         game_scene = game_mode.title
+        logo = SKSpriteNode(imageNamed: "logo")
+        logo.position = CGPoint(x: 0, y: 150)
+        self.addChild(logo)
+        
+        play_button = SKSpriteNode(imageNamed: "play")
+        play_button.position = CGPoint(x: 0, y: -150)
+        play_button.name = "PLAY"
+        self.addChild(play_button)
+        
     }
     
     func startGame() {
+        logo.removeFromParent()
+        play_button.removeFromParent()
+        
         game_scene = game_mode.game
         acornTimer = Timer.scheduledTimer(timeInterval: 2.25, target: self, selector: #selector(GameScene.spawnAcorn), userInfo: nil, repeats: true)
         
-        scoreDisplay.fontName = "ARCO"
-        scoreDisplay.horizontalAlignmentMode = .center
-        scoreDisplay.position = CGPoint(x: 0, y: 280)
-        scoreDisplay.fontColor = UIColor(red: 39/255, green: 15/255, blue: 0/255, alpha: 1)
-        scoreDisplay.fontSize = 80
-        scoreDisplay.text = String(score)
-        self.addChild(scoreDisplay)
+        score_display.fontName = "ARCO"
+        score_display.horizontalAlignmentMode = .center
+        score_display.position = CGPoint(x: 0, y: 280)
+        score_display.zPosition = 1
+        score_display.fontColor = UIColor(red: 39/255, green: 15/255, blue: 0/255, alpha: 1)
+        score_display.fontSize = 80
+        score_display.text = String(score)
+        self.addChild(score_display)
     }
     
     func gameOver() {
+        acornTimer.invalidate()
+        
+        pile = SKSpriteNode(imageNamed: "pile")
+        pile.position = CGPoint(x: 0, y: -1 * (screen_height + pile.frame.height) )
+        pile.zPosition = 5
+        self.addChild(pile)
+        pile.run(SKAction.moveTo(y: screen_height, duration: 2.5))
         game_scene = game_mode.over
+    }
+    
+    func displayGameOver() {
+        score_display.removeFromParent()
+        removeAcorns()
+        returnNuts()
+        
+        game_over_label.fontName = "ARCO"
+        game_over_label.position = CGPoint(x: 0, y: 75)
+        game_over_label.fontColor = UIColor(red: 39/255, green: 15/255, blue: 0/255, alpha: 1)
+        game_over_label.fontSize = 150
+        game_over_label.zPosition = 6
+        game_over_label.text = "GAME OVER"
+        game_over_label.alpha = 0.0
+        
+        score_display.fontName = "ARCO"
+        score_display.position = CGPoint(x: 0, y: -150)
+        score_display.fontColor = UIColor(red: 39/255, green: 15/255, blue: 0/255, alpha: 1)
+        score_display.fontSize = 200
+        score_display.zPosition = 6
+        score_display.text = String(score)
+        score_display.alpha = 0.0
+        
+        game_over_label.run(SKAction.fadeIn(withDuration: 0.25))
+        score_display.run(SKAction.fadeIn(withDuration: 0.25))
+        self.addChild(game_over_label)
+        self.addChild(score_display)
+        
+        restart_ready = true
     }
     
     @objc func spawnAcorn(){
@@ -221,26 +286,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         acorn.physicsBody?.linearDamping = 0.15
         
         acorn.physicsBody?.categoryBitMask = category.acorn
-        acorn.physicsBody?.collisionBitMask = category.nuts[0] | category.nuts[1] | category.nuts[2] | category.nuts[3] | category.floor | category.acorn | category.finish
-        acorn.physicsBody?.contactTestBitMask = category.nuts[0] | category.nuts[1] | category.nuts[2] | category.nuts[3] | category.floor | category.acorn | category.finish
+        acorn.physicsBody?.collisionBitMask = category.nuts[0] | category.nuts[1] | category.nuts[2] | category.nuts[3] | category.floor | category.acorn | category.finish | category.bumper
+        acorn.physicsBody?.contactTestBitMask = category.nuts[0] | category.nuts[1] | category.nuts[2] | category.nuts[3] | category.floor | category.acorn | category.finish | category.bumper
         acorn.name = "acorn"
         
         let randomPosition = Int.random(in: 0..<300)
-        acorn.position = CGPoint(x: -742, y: randomPosition)
+        acorn.position = CGPoint(x: Int(-1 * (screen_width + acorn_width) ), y: randomPosition)
         
         self.addChild(acorn)
         number_of_acorns += 1
         
-        let randomImpulse = Int.random(in: 50..<100)
+        let randomImpulse = Int.random(in: 100..<300)
         
-        acorn.physicsBody?.applyImpulse( CGVector(dx: randomImpulse, dy: 300 - (randomPosition - 20)) )
+        acorn.physicsBody?.applyImpulse( CGVector(dx: randomImpulse, dy: 100) )
+    }
+    
+    func removeAcorns() {
+        for n in self.children {
+            if(n.name == "acorn") {
+                n.removeFromParent()
+            }
+        }
+        number_of_acorns = 0
     }
     
     func scoreAcorn(acorn: SKPhysicsBody){
-        acorn.node?.removeFromParent()
-        score += 1
-        number_of_acorns -= 1
-        scoreDisplay.text = String(score)
+        if ( acorn.node?.removeFromParent() != nil ) {
+            score += 1
+            number_of_acorns -= 1
+            score_display.text = String(score)
+        }
     }
     
     func overNut(x: CGFloat, nut: Int) -> Bool {
@@ -255,35 +330,73 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let location = touch.location(in: self)
-
-            for i in 1...4 {
-                if(overNut(x: location.x, nut: i)) {
-                    moveNut(nut: i)
+            
+            if(game_scene == game_mode.title) {
+                if(self.atPoint(location).name == "PLAY") {
+                    play_button.texture = SKTexture(imageNamed: "play_pressed")
+                    button_pressed = true
+                    button_pressable = true
+                } else {
+                    button_pressed = false
+                    button_pressable = false
+                }
+            } else if(game_scene == game_mode.game) {
+                for i in 1...4 {
+                    if(overNut(x: location.x, nut: i)) {
+                        moveNut(nut: i)
+                    }
                 }
             }
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
         for touch in touches {
-            
             let location = touch.location(in: self)
             let previous_location = touch.previousLocation(in: self)
             
-            for i in 1...4 {
-                if (overNut(x: location.x, nut: i)) {
-                    moveNut(nut: i)
-                } else if (overNut(x: previous_location.x, nut: i)) {
-                    returnNut(nut: i)
+            if(game_scene == game_mode.title) {
+                if(self.atPoint(location).name == "PLAY" && button_pressable) {
+                    play_button.texture = SKTexture(imageNamed: "play_pressed")
+                    button_pressed = true
+                } else {
+                    play_button.texture = SKTexture(imageNamed: "play")
+                    button_pressed = false
                 }
+            } else if(game_scene == game_mode.game || game_scene == game_mode.over) {
+                    for i in 1...4 {
+                        if (overNut(x: location.x, nut: i)) {
+                            moveNut(nut: i)
+                        } else if (overNut(x: previous_location.x, nut: i)) {
+                            returnNut(nut: i)
+                        }
+                    }
             }
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for i in 1...4 {
-            returnNut(nut: i)
+        for touch in touches {
+            let previous_location = touch.previousLocation(in: self)
+            
+            if(game_scene == game_mode.title) {
+                if(button_pressed) {
+                    button_pressed = false
+                    button_pressable = false
+                    startGame()
+                } else {
+                    button_pressable = false
+                }
+            } else if(game_scene == game_mode.game || game_scene == game_mode.over) {
+                for i in 1...4 {
+                    if(overNut(x: previous_location.x, nut: i)) {
+                        returnNut(nut: i)
+                    }
+                }
+            }
+            if(restart_ready) {
+                startTitle()
+            }
         }
     }
     
@@ -295,56 +408,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         nutArray[nut-1].run(SKAction.move(to: startArray[nut-1], duration: 0.05))
     }
     
+    func returnNuts() {
+        for i in 1...4 {
+            returnNut(nut: i)
+        }
+    }
+    
     override func update(_ currentTime: TimeInterval){
-        if(number_of_acorns >= 20){
-            //reset game
+        if(game_scene == game_mode.game) {
+            if(number_of_acorns >= 25){
+                gameOver()
+            }
+        } else if(game_scene == game_mode.over) {
+            if (!restart_ready && pile.position == CGPoint(x: 0, y: screen_height)) {
+                displayGameOver()
+            }
         }
     }
-    
-    /*
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
-        
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
-    }
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    */
 }
