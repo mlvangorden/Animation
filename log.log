@@ -1,0 +1,285 @@
+commit a0977b725ffaabe230761d3f0e66e260ed722031
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Sat Oct 12 19:20:55 2019 -0400
+
+    10/12/19 7:20pm Everything works, need to adjust timer for acorn spawn and redraw gameover screen
+
+ Animation Image Templates/Acorn.afdesign           | Bin 1791966 -> 1397648 bytes
+ Animation Image Templates/Game_Over.afdesign       | Bin 0 -> 600453 bytes
+ Animation Image Templates/Grass.afdesign           | Bin 557623 -> 561686 bytes
+ Animation Image Templates/Play.afdesign            | Bin 405208 -> 406192 bytes
+ Animation Image Templates/app_icon.afdesign        | Bin 436034 -> 492117 bytes
+ .../UserInterfaceState.xcuserstate                 | Bin 33559 -> 33449 bytes
+ .../AppIcon.appiconset/Contents.json               |  58 +++--
+ .../AppIcon.appiconset/Icon-App-20x20@1x.png       | Bin 0 -> 1146 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@2x.png       | Bin 0 -> 2549 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@3x.png       | Bin 0 -> 4274 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@1x.png       | Bin 0 -> 1721 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@2x.png       | Bin 0 -> 4132 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@3x.png       | Bin 0 -> 7139 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@1x.png       | Bin 0 -> 2549 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@2x.png       | Bin 0 -> 6423 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@3x.png       | Bin 0 -> 10971 bytes
+ .../AppIcon.appiconset/Icon-App-60x60@2x.png       | Bin 0 -> 10971 bytes
+ .../AppIcon.appiconset/Icon-App-60x60@3x.png       | Bin 0 -> 18386 bytes
+ .../AppIcon.appiconset/Icon-App-76x76@1x.png       | Bin 0 -> 6004 bytes
+ .../AppIcon.appiconset/Icon-App-76x76@2x.png       | Bin 0 -> 14762 bytes
+ .../AppIcon.appiconset/Icon-App-83.5x83.5@2x.png   | Bin 0 -> 16703 bytes
+ .../AppIcon.appiconset/ItunesArtwork@2x.png        | Bin 0 -> 132323 bytes
+ .../game_over.imageset/Contents.json               |  21 ++
+ .../game_over.imageset/game_over.png               | Bin 0 -> 1957946 bytes
+ .../Assets.xcassets/grass.imageset/grass.png       | Bin 24809 -> 24859 bytes
+ .../Assets.xcassets/logo.imageset/Contents.json    |  21 ++
+ .../Assets.xcassets/logo.imageset/logo.png         | Bin 0 -> 30399 bytes
+ .../Assets.xcassets/pile.imageset/Contents.json    |  21 ++
+ .../Assets.xcassets/pile.imageset/pile.png         | Bin 0 -> 1957946 bytes
+ .../Assets.xcassets/play.imageset/Contents.json    |  21 ++
+ .../Assets.xcassets/play.imageset/play.png         | Bin 0 -> 19192 bytes
+ .../play_pressed.imageset/Contents.json            |  21 ++
+ .../play_pressed.imageset/play_pressed.png         | Bin 0 -> 17832 bytes
+ Animation/Animation/GameScene.sks                  | Bin 39481 -> 39470 bytes
+ Animation/Animation/GameScene.swift                | 278 +++++++++++++--------
+ 35 files changed, 324 insertions(+), 117 deletions(-)
+
+commit 76d61b731950eb46f88808cbbe2109abc4c26b25
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Fri Oct 11 12:37:41 2019 -0400
+
+    10/11/19 12:37pm Foreground good and score displays
+
+ Animation Image Templates/Acorn.afdesign           | Bin 1397648 -> 1791966 bytes
+ Animation Image Templates/Background.afdesign      | Bin 8424455 -> 8483386 bytes
+ Animation Image Templates/Goal.afdesign            | Bin 402277 -> 398643 bytes
+ Animation Image Templates/Grass.afdesign           | Bin 0 -> 557623 bytes
+ Animation Image Templates/Logo.afdesign            | Bin 0 -> 407029 bytes
+ Animation Image Templates/Nut.afdesign             | Bin 1692651 -> 1285540 bytes
+ Animation Image Templates/Play.afdesign            | Bin 0 -> 405208 bytes
+ Animation Image Templates/app_icon.afdesign        | Bin 0 -> 436034 bytes
+ Animation/Animation.xcodeproj/project.pbxproj      |  16 ++++++
+ .../UserInterfaceState.xcuserstate                 | Bin 31479 -> 33559 bytes
+ .../Assets.xcassets/goal.imageset/goal.png         | Bin 10276 -> 7174 bytes
+ .../Assets.xcassets/grass.imageset/Contents.json   |  21 ++++++++
+ .../Assets.xcassets/grass.imageset/grass.png       | Bin 0 -> 24809 bytes
+ Animation/Animation/GameScene.sks                  | Bin 38429 -> 39481 bytes
+ Animation/Animation/GameScene.swift                |  59 +++++++++++++++++++--
+ Animation/Animation/Info.plist                     |   5 ++
+ Animation/Animation/fonts/ARCO for OSX.otf         | Bin 0 -> 33692 bytes
+ Animation/Animation/fonts/ARCO.ttf                 | Bin 0 -> 25792 bytes
+ 18 files changed, 98 insertions(+), 3 deletions(-)
+
+commit bbee1cdfd87550de33f1722bfe5c4ebd54fe489b
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Thu Oct 10 15:27:41 2019 -0400
+
+    10/10/19 3:27pm Music works, need to fix spawn acorn timing
+
+ Animation Image Templates/Background.afdesign      | Bin 7173627 -> 8424455 bytes
+ Animation Image Templates/Goal.afdesign            | Bin 400938 -> 402277 bytes
+ Animation Image Templates/Nut.afdesign             | Bin 1282399 -> 1692651 bytes
+ Animation/Animation.xcodeproj/project.pbxproj      |  12 ++++++++++++
+ .../UserInterfaceState.xcuserstate                 | Bin 30001 -> 31479 bytes
+ .../Assets.xcassets/goal.imageset/goal.png         | Bin 9287 -> 10276 bytes
+ Animation/Animation/GameScene.sks                  | Bin 35498 -> 38429 bytes
+ Animation/Animation/GameScene.swift                |  13 +++++++++++--
+ Animation/Animation/GameViewController.swift       |   1 +
+ Animation/Animation/music/banana_breeze.wav        | Bin 0 -> 19006904 bytes
+ 10 files changed, 24 insertions(+), 2 deletions(-)
+
+commit e32cb24552afc214b7900208023286e4215f3d84
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Mon Oct 7 10:44:04 2019 -0400
+
+    10/7/19 10:43am Scoring works properly
+
+ .DS_Store                                          | Bin 6148 -> 6148 bytes
+ Animation Image Templates/Acorn.afdesign           | Bin 1790730 -> 1397648 bytes
+ Animation Image Templates/Goal.afdesign            | Bin 407786 -> 400938 bytes
+ .../UserInterfaceState.xcuserstate                 | Bin 30828 -> 30001 bytes
+ .../Assets.xcassets/acorn.imageset/acorn.png       | Bin 20528 -> 21194 bytes
+ .../Assets.xcassets/goal.imageset/goal.png         | Bin 15102 -> 9287 bytes
+ Animation/Animation/GameScene.sks                  | Bin 37250 -> 35498 bytes
+ Animation/Animation/GameScene.swift                |  17 +++++++++++------
+ 8 files changed, 11 insertions(+), 6 deletions(-)
+
+commit 4802592e2f93b71576048fbc974251fa209ebf6f
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Fri Oct 4 11:41:53 2019 -0400
+
+    10/4/19 11:41am Commented out scoreAcorn(), looks like it runs
+
+ .../UserInterfaceState.xcuserstate                  | Bin 31401 -> 30828 bytes
+ Animation/Animation/GameScene.sks                   | Bin 37261 -> 37250 bytes
+ Animation/Animation/GameScene.swift                 |   4 ++--
+ 3 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 997a7445a7eedc19151e0896d073465154cd3350
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Fri Oct 4 11:35:56 2019 -0400
+
+    10/4/19 11:35am Got goal working, need to work on scoreAcorn
+
+ .DS_Store                                          | Bin 6148 -> 6148 bytes
+ Animation Image Templates/Background.afdesign      | Bin 8415002 -> 7173627 bytes
+ Animation Image Templates/Goal Face.afdesign       | Bin 0 -> 396706 bytes
+ Animation Image Templates/Goal.afdesign            | Bin 0 -> 407786 bytes
+ .../UserInterfaceState.xcuserstate                 | Bin 30760 -> 31401 bytes
+ .../background.imageset/background.png             | Bin 111135 -> 119891 bytes
+ .../Assets.xcassets/blank.imageset/Contents.json   |  21 +++++
+ .../Assets.xcassets/blank.imageset/blank.png       | Bin 0 -> 1818 bytes
+ .../Assets.xcassets/goal.imageset/Contents.json    |  21 +++++
+ .../Assets.xcassets/goal.imageset/goal.png         | Bin 0 -> 15102 bytes
+ .../goal_front.imageset/Contents.json              |  21 +++++
+ .../goal_front.imageset/goal_front.png             | Bin 0 -> 6088 bytes
+ Animation/Animation/GameScene.sks                  | Bin 29078 -> 37261 bytes
+ Animation/Animation/GameScene.swift                | 104 ++++++++++++---------
+ 14 files changed, 121 insertions(+), 46 deletions(-)
+
+commit 0a8ac42341381b0c74b67c10e7cc44f69a80185d
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Wed Oct 2 10:52:41 2019 -0400
+
+    10/2/19 10:52am Too many acorns
+
+ Animation Image Templates/Background.afdesign      | Bin 0 -> 8415002 bytes
+ .../UserInterfaceState.xcuserstate                 | Bin 30084 -> 30760 bytes
+ .../background.imageset/Contents.json              |  21 ++++++++
+ .../background.imageset/background.png             | Bin 0 -> 111135 bytes
+ Animation/Animation/GameScene.sks                  | Bin 27798 -> 29078 bytes
+ Animation/Animation/GameScene.swift                |  59 +++++++++++++--------
+ 6 files changed, 58 insertions(+), 22 deletions(-)
+
+commit 7004f55c74e94a4e819272a8bd4fa9b22c6b4c14
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Sun Sep 29 22:19:25 2019 -0400
+
+    Fixed multitouch on pegs
+
+ .DS_Store                                          | Bin 6148 -> 6148 bytes
+ .../UserInterfaceState.xcuserstate                 | Bin 29640 -> 30084 bytes
+ Animation/Animation/GameScene.sks                  | Bin 23064 -> 27798 bytes
+ Animation/Animation/GameScene.swift                |  88 +++++++++------------
+ Animation/Animation/GameViewController.swift       |   8 +-
+ 5 files changed, 44 insertions(+), 52 deletions(-)
+
+commit 3465320f282e9117bd7685517a74e19ca21891ce
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Sat Sep 28 20:34:57 2019 -0400
+
+    9/28/19 8:33pm Updated images and physics
+
+ .DS_Store                                          | Bin 6148 -> 6148 bytes
+ Animation Image Templates/Acorn.afdesign           | Bin 0 -> 1790730 bytes
+ Animation Image Templates/Nut.afdesign             | Bin 0 -> 1282399 bytes
+ .../UserInterfaceState.xcuserstate                 | Bin 29806 -> 29640 bytes
+ .../Assets.xcassets/acorn.imageset/acorn.png       | Bin 55170 -> 20528 bytes
+ .../Assets.xcassets/nut1.imageset/Contents.json    |  21 ++++++++++
+ .../Assets.xcassets/nut1.imageset/nut1.png         | Bin 0 -> 23022 bytes
+ .../Assets.xcassets/nut2.imageset/Contents.json    |  21 ++++++++++
+ .../Assets.xcassets/nut2.imageset/nut2.png         | Bin 0 -> 21377 bytes
+ .../Assets.xcassets/nut3.imageset/Contents.json    |  21 ++++++++++
+ .../Assets.xcassets/nut3.imageset/nut3.png         | Bin 0 -> 21335 bytes
+ .../Assets.xcassets/nut4.imageset/Contents.json    |  21 ++++++++++
+ .../Assets.xcassets/nut4.imageset/nut4.png         | Bin 0 -> 21415 bytes
+ Animation/Animation/GameScene.sks                  | Bin 29135 -> 23064 bytes
+ Animation/Animation/GameScene.swift                |  46 ++++++++++++---------
+ 15 files changed, 111 insertions(+), 19 deletions(-)
+
+commit c510e0963f29ba3c9b1837749979d7fa47c04cb3
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Fri Sep 27 21:27:48 2019 -0400
+
+    9/27/19 9:27pm Things work pretty good, need to work on collision physics a little more
+
+ Animation/Animation.xcodeproj/project.pbxproj      |  10 +--
+ .../UserInterfaceState.xcuserstate                 | Bin 29705 -> 29806 bytes
+ Animation/Animation/GameScene.sks                  | Bin 30007 -> 29135 bytes
+ Animation/Animation/GameScene.swift                |  73 ++++++++++-----------
+ 4 files changed, 41 insertions(+), 42 deletions(-)
+
+commit 1e614aff1191c52d8ea7ad2710fa2ace39c524af
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Fri Sep 27 20:12:35 2019 -0400
+
+    9/27/19 8:04pm Physics are better
+
+ .DS_Store                                          | Bin 6148 -> 6148 bytes
+ .../UserInterfaceState.xcuserstate                 | Bin 28883 -> 29705 bytes
+ Animation/Animation/GameScene.sks                  | Bin 28888 -> 30007 bytes
+ Animation/Animation/GameScene.swift                | 340 ++++++---------------
+ 4 files changed, 88 insertions(+), 252 deletions(-)
+
+commit 3bc69ff1de7bb01b8ca2533b2266b6e837d104bf
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Thu Sep 26 20:36:11 2019 -0400
+
+    9/26/19 8:36pm At least it runs
+
+ .DS_Store                                          | Bin 6148 -> 6148 bytes
+ .../UserInterfaceState.xcuserstate                 | Bin 27615 -> 28883 bytes
+ Animation/Animation/GameScene.swift                |  24 +++++++--------------
+ 3 files changed, 8 insertions(+), 16 deletions(-)
+
+commit 8cfa27237fdb437f914634ef18b4504136a1d50f
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Thu Sep 26 20:26:23 2019 -0400
+
+    9/26/19 8:25pm Making progress, collisions don't quite work the way I want
+
+ .../UserInterfaceState.xcuserstate                 | Bin 26898 -> 27615 bytes
+ Animation/Animation/GameScene.sks                  | Bin 14960 -> 28888 bytes
+ Animation/Animation/GameScene.swift                | 164 ++++++++++++++++-----
+ 3 files changed, 127 insertions(+), 37 deletions(-)
+
+commit f53679e6107b76e5d85f7965b5e05bbeed0694a6
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Tue Sep 24 22:25:35 2019 -0400
+
+    9/24/19 10:25pm the nut bounces
+
+ .DS_Store                                          | Bin 0 -> 6148 bytes
+ .../UserInterfaceState.xcuserstate                 | Bin 9144 -> 26898 bytes
+ Animation/Animation/Actions.sks                    | Bin 1892 -> 1638 bytes
+ .../Assets.xcassets/acorn.imageset/Contents.json   |  21 ++
+ .../Assets.xcassets/acorn.imageset/acorn.png       | Bin 0 -> 55170 bytes
+ Animation/Animation/Base.lproj/Main.storyboard     |  12 +-
+ Animation/Animation/GameScene.sks                  | Bin 4694 -> 14960 bytes
+ Animation/Animation/GameScene.swift                | 268 ++++++++++++++++++++-
+ Animation/Animation/GameViewController.swift       |   4 +-
+ 9 files changed, 290 insertions(+), 15 deletions(-)
+
+commit 80104ab4c311e80ab314c5f1d3a268bdfdbd53ac
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Mon Sep 23 10:23:39 2019 -0400
+
+    First upload
+
+ .gitignore                                         |   1 +
+ Animation/Animation.xcodeproj/project.pbxproj      | 603 +++++++++++++++++++++
+ .../project.xcworkspace/contents.xcworkspacedata   |   7 +
+ .../xcshareddata/IDEWorkspaceChecks.plist          |   8 +
+ .../UserInterfaceState.xcuserstate                 | Bin 0 -> 9144 bytes
+ .../xcschemes/xcschememanagement.plist             |  14 +
+ Animation/Animation/Actions.sks                    | Bin 0 -> 1892 bytes
+ Animation/Animation/AppDelegate.swift              |  41 ++
+ .../AppIcon.appiconset/Contents.json               |  98 ++++
+ Animation/Animation/Assets.xcassets/Contents.json  |   6 +
+ .../Animation/Base.lproj/LaunchScreen.storyboard   |  25 +
+ Animation/Animation/Base.lproj/Main.storyboard     |  24 +
+ Animation/Animation/GameScene.sks                  | Bin 0 -> 4694 bytes
+ Animation/Animation/GameScene.swift                |  89 +++
+ Animation/Animation/GameViewController.swift       |  50 ++
+ Animation/Animation/Info.plist                     |  47 ++
+ Animation/AnimationTests/AnimationTests.swift      |  34 ++
+ Animation/AnimationTests/Info.plist                |  22 +
+ Animation/AnimationUITests/AnimationUITests.swift  |  43 ++
+ Animation/AnimationUITests/Info.plist              |  22 +
+ 20 files changed, 1134 insertions(+)
+
+commit 388f5acf3c97541f47e1546796210096aac3a124
+Author: mlvangorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Mon Sep 23 10:03:51 2019 -0400
+
+    Initial commit
+
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)

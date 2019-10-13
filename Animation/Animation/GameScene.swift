@@ -74,6 +74,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var startArray = [CGPoint]()
     
     var acornTimer = Timer()
+    var timer_running = false
     var score_display = SKLabelNode()
     
     var score = 0
@@ -158,14 +159,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var acor = SKPhysicsBody()
         var nutX = SKPhysicsBody()
         
-        //acorn vs goal
-        if( contact.bodyA.categoryBitMask == category.acorn && contact.bodyB.categoryBitMask == category.finish ) {
-            acor = contact.bodyA
-            scoreAcorn(acorn: acor)
-        }
-        else if( contact.bodyA.categoryBitMask == category.finish && contact.bodyB.categoryBitMask == category.acorn ) {
-            acor = contact.bodyB
-            scoreAcorn(acorn: acor)
+        if(game_scene == game_mode.game) {
+            //acorn vs goal
+            if( contact.bodyA.categoryBitMask == category.acorn && contact.bodyB.categoryBitMask == category.finish ) {
+                acor = contact.bodyA
+                scoreAcorn(acorn: acor)
+            }
+            else if( contact.bodyA.categoryBitMask == category.finish && contact.bodyB.categoryBitMask == category.acorn ) {
+                acor = contact.bodyB
+                scoreAcorn(acorn: acor)
+            }
         }
         
         //acorn vs nut
@@ -223,7 +226,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         play_button.removeFromParent()
         
         game_scene = game_mode.game
-        acornTimer = Timer.scheduledTimer(timeInterval: 2.25, target: self, selector: #selector(GameScene.spawnAcorn), userInfo: nil, repeats: true)
+        spawnAcorn()
+        runTimer()
         
         score_display.fontName = "ARCO"
         score_display.horizontalAlignmentMode = .center
@@ -253,7 +257,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         game_over_label.fontName = "ARCO"
         game_over_label.position = CGPoint(x: 0, y: 75)
-        game_over_label.fontColor = UIColor(red: 39/255, green: 15/255, blue: 0/255, alpha: 1)
+        game_over_label.fontColor = UIColor(red: 234/255, green: 176/255, blue: 15/255, alpha: 1)
         game_over_label.fontSize = 150
         game_over_label.zPosition = 6
         game_over_label.text = "GAME OVER"
@@ -261,7 +265,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         score_display.fontName = "ARCO"
         score_display.position = CGPoint(x: 0, y: -150)
-        score_display.fontColor = UIColor(red: 39/255, green: 15/255, blue: 0/255, alpha: 1)
+        score_display.fontColor = UIColor(red: 234/255, green: 176/255, blue: 15/255, alpha: 1)
         score_display.fontSize = 200
         score_display.zPosition = 6
         score_display.text = String(score)
@@ -299,6 +303,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let randomImpulse = Int.random(in: 100..<300)
         
         acorn.physicsBody?.applyImpulse( CGVector(dx: randomImpulse, dy: 100) )
+        timer_running = false
     }
     
     func removeAcorns() {
@@ -414,8 +419,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func runTimer() {
+        timer_running = true
+        var elapse : Double = (3 - Double(score / 20))
+        elapse = max(elapse, 1)
+        acornTimer = Timer.scheduledTimer(timeInterval: elapse, target: self, selector: #selector(GameScene.spawnAcorn), userInfo: nil, repeats: false)
+    }
+    
     override func update(_ currentTime: TimeInterval){
         if(game_scene == game_mode.game) {
+            if(!timer_running) {
+                runTimer()
+            }
             if(number_of_acorns >= 25){
                 gameOver()
             }
