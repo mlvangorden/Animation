@@ -1,3 +1,15 @@
+commit aa4885a1ae0ba916d05d5e42b8416b8982903e16
+Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
+Date:   Sun Oct 13 19:16:56 2019 -0400
+
+    Complete
+
+ .../UserInterfaceState.xcuserstate                 | Bin 33449 -> 33305 bytes
+ Animation/Animation/GameScene.swift                |  37 ++-
+ README.md                                          |   5 +-
+ log.log                                            | 285 +++++++++++++++++++++
+ 4 files changed, 315 insertions(+), 12 deletions(-)
+
 commit a0977b725ffaabe230761d3f0e66e260ed722031
 Author: Matthew Van Gorden <33157785+mlvangorden@users.noreply.github.com>
 Date:   Sat Oct 12 19:20:55 2019 -0400
